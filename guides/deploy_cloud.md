@@ -51,4 +51,17 @@ The deployment configuration variables are located at the top of `scripts/deploy
 
 - `SERVICE_NAME`: The name of the Cloud Run service (default: `time-track-dashboard`).
 - `REGION`: The GCP region (default: `southamerica-west1`).
+
+### 3. Continuous Deployment (CD) Setup
+
+If you have set up Continuous Deployment (e.g., via Cloud Build triggers from GitHub):
+
+1.  **Code Changes**: Pushing to your repository will automatically build and deploy the new image.
+2.  **Secret Management**: Since `.streamlit/secrets.toml` is **not** in your repository, updating secrets requires a manual step.
+    - Run the provided script to upload your local secrets and configure the running service to use them:
+      ```bash
+      ./scripts/update_cloud_run_secrets.sh
+      ```
+    - This script uploads the current state of your local `.streamlit/secrets.toml` to Secret Manager and updates the Cloud Run service to mount it.
+
 - `SECRET_NAME`: The name of the secret in Secret Manager (default: `time-track-dashboard-secrets`).
