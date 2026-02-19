@@ -2,7 +2,7 @@
 
 # Configuration
 SECRET_NAME="time-track-dashboard-secrets"
-PROJECT_ID=$(gcloud config get-value project)
+PROJECT_ID="personal-dashboards-487913"
 SECRETS_FILE=".streamlit/secrets.toml"
 
 if [ ! -f "$SECRETS_FILE" ]; then

@@ -5,7 +5,7 @@ SERVICE_NAME="time-track-dashboard"
 REGION="southamerica-west1"
 SECRET_NAME="time-track-dashboard-secrets"
 REPO_NAME="cloud-run-source-deploy" # Standard repo name
-PROJECT_ID=$(gcloud config get-value project)
+PROJECT_ID="personal-dashboards-487913"
 PROJECT_NUMBER=$(gcloud projects describe $PROJECT_ID --format="value(projectNumber)")
 IMAGE_NAME="${REGION}-docker.pkg.dev/${PROJECT_ID}/${REPO_NAME}/${SERVICE_NAME}:latest"
 SERVICE_ACCOUNT="${PROJECT_NUMBER}-compute@developer.gserviceaccount.com"

@@ -4,7 +4,7 @@
 SERVICE_NAME="time-track-dashboard"
 REGION="southamerica-west1"
 SECRET_NAME="time-track-dashboard-secrets"
-PROJECT_ID=$(gcloud config get-value project)
+PROJECT_ID="personal-dashboards-487913"
 SECRETS_FILE=".streamlit/secrets.toml"
 
 echo "🚀 Starting Secrets Update for $SERVICE_NAME..."
