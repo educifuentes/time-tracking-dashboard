@@ -32,4 +32,11 @@ pg = st.navigation({
     "Dev": [staging_page, intermediate_page, marts_page, bi_tables_page]
 })
 
+# Sidebar - Utilities
+with st.sidebar:
+    st.divider()
+    if st.button("Refresh Gsheet Data", icon=":material/refresh:", type="primary", use_container_width=True):
+        st.cache_data.clear()
+        st.rerun()
+
 pg.run()
