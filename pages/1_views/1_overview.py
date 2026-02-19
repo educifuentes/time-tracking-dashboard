@@ -7,7 +7,9 @@ from models.marts.fct_activities import fct_activities
 from utilities.ui_components.render_model import render_model_ui
 from utilities.visulizations.charts import bar_chart_by_project
 
-st.title("Horas trabajadas")
+from utilities.ui_components.icons import render_icon
+
+st.title(f"Horas trabajadas {render_icon('logo')}")
 
 # Load data
 df = fct_activities()

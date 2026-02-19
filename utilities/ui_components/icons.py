@@ -1,20 +1,18 @@
 ICONS = {
+    # source: https://fonts.google.com/icons
     # branding
-    "logo": "energy_program_saving",
+    "logo": "timer",
     
     # tables
-    "person": "person",
-    "hogares": "family_group",
-    "bases_ccu": "assignment",
-    "contratos": "contract",
-    
+    "horas": "timer",
     # VALIDATIONS   
     "check": "check_box",
     "warning": "warning",
     "close": "close",
-    
     # otros
     "documentation": "article",
+    "search": "search",
+    "database": "database",
     "metrics": "calculate",
     "not_apply": "circle"
 }

@@ -1,29 +1,32 @@
 import streamlit as st
+from utilities.ui_components.icons import render_icon
 
 
 # ==========================================
 # Page Configuration
 # ==========================================
 st.set_page_config(
-    page_title="Spendee Dashboard :material/paid:",
-    page_icon=":material/paid:",
+    page_title="Time Tracking",
+    page_icon=render_icon("logo"),
     layout="wide",
     initial_sidebar_state="expanded"
 )
 
+
+
 # Section - Reports
-overview_page = st.Page("pages/1_views/1_overview.py", title="Overview", icon=":material/dashboard:")
+overview_page = st.Page("pages/1_views/1_overview.py", title="Overview", icon=render_icon("logo"))
 
 # Section - Tools
-documentation_page = st.Page("pages/2_tools/1_documentation.py", title="Documentation", icon=":material/description:")
-validations_page = st.Page("pages/2_tools/2_validations.py", title="Validations", icon=":material/warning:")
-explorer_page = st.Page("pages/2_tools/3_explorer.py", title="Explorer", icon=":material/search:")
+documentation_page = st.Page("pages/2_tools/1_documentation.py", title="Documentation", icon=render_icon("documentation"))
+validations_page = st.Page("pages/2_tools/2_validations.py", title="Validations", icon=render_icon("warning"))
+explorer_page = st.Page("pages/2_tools/3_explorer.py", title="Explorer", icon=render_icon("search"))
 
 # Section - Dev
-staging_page = st.Page("pages/3_dev/1_staging.py", title="Staging", icon=":material/database:")
-intermediate_page = st.Page("pages/3_dev/2_intermediate.py", title="Intermediate", icon=":material/database:")
-marts_page = st.Page("pages/3_dev/3_marts.py", title="Marts", icon=":material/database:")
-bi_tables_page = st.Page("pages/3_dev/4_bi_tables.py", title="BI Tables", icon=":material/database:")
+staging_page = st.Page("pages/3_dev/1_staging.py", title="Staging", icon=render_icon("horas"))
+intermediate_page = st.Page("pages/3_dev/2_intermediate.py", title="Intermediate", icon=render_icon("database"))
+marts_page = st.Page("pages/3_dev/3_marts.py", title="Marts", icon=render_icon("database"))
+bi_tables_page = st.Page("pages/3_dev/4_bi_tables.py", title="BI Tables", icon=render_icon("database"))
 
 # current page
 pg = st.navigation({
