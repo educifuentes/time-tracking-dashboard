@@ -1,0 +1,3 @@
+seeds/*
+.secrets/*
+.streamlit/secrets.toml

@@ -1,0 +1,8 @@
+sources:
+  - name: horas
+    description: Track of use of my time.
+    kind: Google Sheets
+    tables:
+      - name: horas
+        url: https://docs.google.com/spreadsheets/d/1I-nQVWT9XP1p0DLbgvpCMWjzQ8i6CqbTM1E9g4oCzDY/
+        worksheet: horas
