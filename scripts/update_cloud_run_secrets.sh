@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 
 # Configuration
 SERVICE_NAME="time-track-dashboard"
@@ -7,51 +8,80 @@ SECRET_NAME="time-track-dashboard-secrets"
 PROJECT_ID="personal-dashboards-487913"
 SECRETS_FILE=".streamlit/secrets.toml"
 
-echo "🚀 Starting Secrets Update for $SERVICE_NAME..."
+# Colors (simpler ANSI codes compatible with most terminals)
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+RED='\033[0;31m'
+NC='\033[0m' # No Color
 
-# 1. Upload Secrets to Secret Manager
-echo "--- Step 1: Uploading Secrets to Secret Manager ---"
+echo -e "${GREEN}🚀 Starting Secrets Update for $SERVICE_NAME...${NC}"
+
+# Pre-check: Verify secrets file exists
 if [ ! -f "$SECRETS_FILE" ]; then
-    echo "Error: $SECRETS_FILE not found."
+    echo -e "${RED}Error: Local secrets file '$SECRETS_FILE' not found!${NC}"
     exit 1
 fi
 
-echo "Checking if secret $SECRET_NAME exists..."
-if gcloud secrets describe "$SECRET_NAME" --project="$PROJECT_ID" >/dev/null 2>&1; then
-    echo "Secret exists. Adding new version..."
+# 0. Ensure Secret Manager API is enabled
+echo -e "\n${YELLOW}--- Step 0: Checking Secret Manager API ---${NC}"
+if ! gcloud services list --enabled --project="$PROJECT_ID" --filter="config.name:secretmanager.googleapis.com" --format="value(config.name)" | grep -q "secretmanager.googleapis.com"; then
+    echo "Secret Manager API is not enabled. Enabling it now..."
+    gcloud services enable secretmanager.googleapis.com --project="$PROJECT_ID"
+    echo "API enabled."
 else
-    echo "Creating new secret $SECRET_NAME..."
-    gcloud secrets create "$SECRET_NAME" --replication-policy="automatic" --project="$PROJECT_ID"
+    echo "Secret Manager API is already enabled."
 fi
 
-echo "Uploading contents of $SECRETS_FILE to $SECRET_NAME..."
-gcloud secrets versions add "$SECRET_NAME" --data-file="$SECRETS_FILE" --project="$PROJECT_ID"
+# 1. Upload Secrets to Secret Manager
+echo -e "\n${YELLOW}--- Step 1: Uploading Secrets to Secret Manager ---${NC}"
 
-# 2. Grant Access (Crucial for CD where the service identity might change or lose permission)
-echo "--- Step 2: Granting Access to Cloud Run Service Account ---"
-# Get the service account used by the Cloud Run service
-SERVICE_ACCOUNT=$(gcloud run services describe $SERVICE_NAME --region=$REGION --format="value(spec.template.spec.serviceAccountName)")
+# Check if secret exists. valid_secret will be true (0) if describe succeeds.
+# We add --quiet to avoid interactive prompts that cause scripts to hang.
+if gcloud secrets describe "$SECRET_NAME" --project="$PROJECT_ID" --quiet >/dev/null 2>&1; then
+    echo "Secret '$SECRET_NAME' exists. Adding new version..."
+else
+    echo "Secret '$SECRET_NAME' not found. Creating new secret..."
+    gcloud secrets create "$SECRET_NAME" --replication-policy="automatic" --project="$PROJECT_ID" --quiet
+    echo "Secret created."
+fi
 
-if [ -z "$SERVICE_ACCOUNT" ]; then
-    # Fallback to default compute service account if not explicitly set
-    PROJECT_NUMBER=$(gcloud projects describe $PROJECT_ID --format="value(projectNumber)")
+echo "Uploading contents of $SECRETS_FILE..."
+gcloud secrets versions add "$SECRET_NAME" --data-file="$SECRETS_FILE" --project="$PROJECT_ID" --quiet
+
+# 2. Grant Access
+echo -e "\n${YELLOW}--- Step 2: Granting Access to Cloud Run Service Account ---${NC}"
+
+# Attempt to get the service account from the running service
+# We capture stderr to null to avoid noise if the service doesn't exist yet or other errors
+EXISTING_SA=$(gcloud run services describe "$SERVICE_NAME" --region="$REGION" --project="$PROJECT_ID" --format="value(spec.template.spec.serviceAccountName)" --quiet 2>/dev/null || true)
+
+if [ -n "$EXISTING_SA" ]; then
+    SERVICE_ACCOUNT="$EXISTING_SA"
+    echo "Found configured Service Account: $SERVICE_ACCOUNT"
+else
+    # Fallback: Construct the default compute service account
+    echo "Could not retrieve service account (service might not exist yet)."
+    echo "Fetching project number to determine default compute service account..."
+    PROJECT_NUMBER=$(gcloud projects describe "$PROJECT_ID" --format="value(projectNumber)" --quiet)
     SERVICE_ACCOUNT="${PROJECT_NUMBER}-compute@developer.gserviceaccount.com"
-    echo "Service account not found in service definition, assuming default: $SERVICE_ACCOUNT"
-else
-    echo "Target Service Account: $SERVICE_ACCOUNT"
+    echo -e "${YELLOW}Using default Compute Engine Service Account: $SERVICE_ACCOUNT${NC}"
 fi
 
-echo "Granting roles/secretmanager.secretAccessor to $SERVICE_ACCOUNT on $SECRET_NAME..."
-gcloud secrets add-iam-policy-binding $SECRET_NAME \
+echo "Granting 'roles/secretmanager.secretAccessor' to $SERVICE_ACCOUNT..."
+gcloud secrets add-iam-policy-binding "$SECRET_NAME" \
     --member="serviceAccount:$SERVICE_ACCOUNT" \
     --role="roles/secretmanager.secretAccessor" \
-    --project=$PROJECT_ID >/dev/null 2>&1 || echo "Warning: Could not grant permissions automatically."
+    --project="$PROJECT_ID" \
+    --quiet >/dev/null
 
-# 3. Update Cloud Run Service to use the new Secret
-echo "--- Step 3: Updating Cloud Run Service to Mount Secret ---"
-# This command updates the service to mount the latest version of the secret at the expected path
-gcloud run services update $SERVICE_NAME \
-    --region=$REGION \
-    --set-secrets="/app/.streamlit/secrets.toml=${SECRET_NAME}:latest"
+# 3. Update Cloud Run Service
+echo -e "\n${YELLOW}--- Step 3: Updating Cloud Run Service to Mount Secret ---${NC}"
+echo "Updating Cloud Run service to mount the secret at /app/.streamlit/secrets.toml..."
 
-echo "✅ Secrets updated and service re-deployed!"
+gcloud run services update "$SERVICE_NAME" \
+    --region="$REGION" \
+    --project="$PROJECT_ID" \
+    --set-secrets="/app/.streamlit/secrets.toml=${SECRET_NAME}:latest" \
+    --quiet
+
+echo -e "\n${GREEN}✅ Secrets updated and service re-deployed successfully!${NC}"
