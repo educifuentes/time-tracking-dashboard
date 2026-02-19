@@ -25,6 +25,10 @@ def bar_chart_by_project(df):
         df: DataFrame with 'project' and 'horas' columns
     """
     
+    # Clean data: drop rows with None, NaN or empty project names
+    df = df.dropna(subset=['project'])
+    df = df[df['project'].astype(str).str.strip() != '']
+    
     # Get unique items in the dataframe ranked by amount
     projects = get_projects_ranked_by_hours(df)
     
@@ -57,7 +61,8 @@ def bar_chart_by_project(df):
         align='left',
         baseline='middle',
         dx=5,
-        fontWeight='bold'
+        fontWeight='bold',
+        color='gray'
     ).encode(
         x=alt.X("sum(horas):Q", stack=None),
         text=alt.Text("sum(horas):Q", format=".1f")
