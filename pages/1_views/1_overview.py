@@ -9,7 +9,7 @@ from utilities.visulizations.charts import bar_chart_by_project
 
 from utilities.ui_components.icons import render_icon
 
-st.title(f"Horas trabajadas {render_icon('logo')}")
+st.title(f"{render_icon('logo')} Horas")
 
 # Load data
 df = fct_activities()
