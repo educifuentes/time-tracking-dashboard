@@ -1,4 +1,5 @@
 import streamlit as st
+import os
 from utilities.ui_components.icons import render_icon
 
 
@@ -29,11 +30,19 @@ marts_page = st.Page("pages/3_dev/3_marts.py", title="Marts", icon=render_icon("
 bi_tables_page = st.Page("pages/3_dev/4_bi_tables.py", title="BI Tables", icon=render_icon("database"))
 
 # current page
-pg = st.navigation({
+nav_pages = {
     "Reports": [overview_page],
-    "Tools": [documentation_page, validations_page, explorer_page],
-    "Dev": [staging_page, intermediate_page, marts_page, bi_tables_page]
-})
+    "Tools": [documentation_page, validations_page, explorer_page]
+}
+
+# Environment check (Local vs Cloud)
+# On local Mac dev, the USER env var is usually 'educifuentes'
+IS_LOCAL = os.getenv("USER") == "educifuentes"
+
+if IS_LOCAL:
+    nav_pages["Dev"] = [staging_page, intermediate_page, marts_page, bi_tables_page]
+
+pg = st.navigation(nav_pages)
 
 # Sidebar - Utilities
 with st.sidebar:
