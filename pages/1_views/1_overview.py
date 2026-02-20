@@ -10,6 +10,7 @@ from utilities.visulizations.charts import bar_chart_by_project, bar_chart_by_da
 from utilities.ui_components.icons import render_icon
 
 st.title(f"{render_icon('logo')} Horas")
+st.markdown("Continuos deplyment test")
 
     
 
