@@ -1,5 +1,6 @@
 import altair as alt
 import pandas as pd
+from utilities.ui_components.colors import AREA_COLORS
 
 # ==========================================
 # Helpers
@@ -44,9 +45,12 @@ def bar_chart_by_project(df):
     ).encode(
         x=alt.X("sum(horas):Q", title="Total Hours", axis=alt.Axis(format=".1f")),
         color=alt.Color(
-            "project:N",
-            legend=None,
-            scale=alt.Scale(scheme='tableau20')
+            "area:N",
+            scale=alt.Scale(
+                domain=list(AREA_COLORS.keys()),
+                range=list(AREA_COLORS.values())
+            ),
+            legend=alt.Legend(title="Área")
         ),
         tooltip=[
             "project", 
