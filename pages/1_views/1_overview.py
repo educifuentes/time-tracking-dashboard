@@ -18,9 +18,8 @@ df = fct_activities()
 
 st.markdown("Date range " + f"{df['date'].min().date()} - {df['date'].max().date()}")
 
-def display_dashboard_section(filtered_df, label):
+def display_dashboard_section(filtered_df):
     if not filtered_df.empty:
-        st.subheader(f"{label}")
 
         total_hours = filtered_df["horas"].sum()
         st.metric("Total Horas", f"{total_hours:.1f}h")
@@ -32,7 +31,7 @@ def display_dashboard_section(filtered_df, label):
         with st.expander("Ver Detalle de Actividades"):
             render_model_ui(filtered_df)
     else:
-        st.info(f"No hay actividades registradas para {label.lower()}.")
+        st.info("No hay actividades registradas.")
 
 # Reference date (Today)
 today = pd.Timestamp.now().normalize()
@@ -42,17 +41,19 @@ col1, col2 = st.columns(2)
 
 with col1:
     with st.container(height=600):
+        st.subheader("Hoy")
         df_today = df[df["date"].dt.date == today.date()]
-        display_dashboard_section(df_today, "Hoy")
+        display_dashboard_section(df_today)
 
 with col2:
     with st.container(height=600):
+        st.subheader("Semana")
         # Calculations for "This Week" (Monday to Sunday)
         start_of_week = today - timedelta(days=today.weekday())
         end_of_week = start_of_week + timedelta(days=6)
         
         df_week = df[(df["date"] >= start_of_week) & (df["date"] <= end_of_week)]
-        display_dashboard_section(df_week, "Semana")
+        display_dashboard_section(df_week)
 
 # Layout: This Month at the bottom
 st.divider()
@@ -64,14 +65,14 @@ next_month = (today.replace(day=28) + timedelta(days=4)).replace(day=1)
 end_of_month = next_month - timedelta(days=1)
 
 df_month = df[(df["date"] >= start_of_month) & (df["date"] <= end_of_month)]
-display_dashboard_section(df_month, "Este Mes")
+display_dashboard_section(df_month)
 
 # Layout: Dynamic chart for given history
 st.divider()
 
-col_title, col_filter = st.columns([3, 1])
-with col_title:
-    st.subheader("Histórico de Actividades")
+st.subheader("Trends")
+
+col_filter, col_dummy1, col_dummy2 = st.columns(3)
 with col_filter:
     history_option = st.selectbox(
         "Filtro de Tiempo",

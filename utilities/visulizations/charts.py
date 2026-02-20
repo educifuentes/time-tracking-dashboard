@@ -1,6 +1,6 @@
 import altair as alt
 import pandas as pd
-from utilities.ui_components.colors import AREA_COLORS, AREA_SORTING
+from utilities.constants.area_config import AREA_COLORS, AREA_SORTING
 from utilities.ui_components.days_of_week import DAYS_OF_WEEK
 
 # ==========================================
