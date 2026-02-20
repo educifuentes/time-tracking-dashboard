@@ -1,6 +1,6 @@
 import altair as alt
 import pandas as pd
-from utilities.ui_components.colors import AREA_COLORS
+from utilities.ui_components.colors import AREA_COLORS, AREA_SORTING
 from utilities.ui_components.days_of_week import DAYS_OF_WEEK
 
 # ==========================================
@@ -8,13 +8,13 @@ from utilities.ui_components.days_of_week import DAYS_OF_WEEK
 # ==========================================
 def get_projects_ranked_by_hours(df):
     """
-    Returns a list of projects sorted by total hours.
+    Returns a list of project_display sorted by total hours.
     """
-    if "project" not in df.columns or "horas" not in df.columns:
+    if "project_display" not in df.columns or "horas" not in df.columns:
         return None
         
-    summary = df.groupby("project")["horas"].sum().sort_values(ascending=False).reset_index()
-    return summary["project"].tolist()
+    summary = df.groupby("project_display")["horas"].sum().sort_values(ascending=False).reset_index()
+    return summary["project_display"].tolist()
 
 # ==========================================
 # Project & Hours Charts
@@ -29,14 +29,27 @@ def bar_chart_by_project(df):
     
     # Clean data: drop rows with None, NaN or empty project names
     df = df.dropna(subset=['project'])
-    df = df[df['project'].astype(str).str.strip() != '']
+    df = df[df['project'].astype(str).str.strip() != ''].copy()
     
-    # Get unique items in the dataframe ranked by amount
-    projects = get_projects_ranked_by_hours(df)
+    # Sort DataFrame by AREA_SORTING mapping, then by total hours descending. 
+    # To do this correctly: get hours per project_display, map area sorting, and sort.
+    # We will build a helper dataframe for the sort order.
+    df['project_display'] = df['area'].astype(str) + " - " + df['project'].astype(str)
+    
+    # Calculate sum per project_display for the secondary sort
+    summary = df.groupby(['project_display', 'area'])['horas'].sum().reset_index()
+    # Apply AREA_SORTING to get the primary sort key (default 99 if missing)
+    summary['area_sort_idx'] = summary['area'].map(lambda x: AREA_SORTING.get(x, 99))
+    
+    # Sort by area index ascending, then by total hours descending
+    summary = summary.sort_values(by=['area_sort_idx', 'horas'], ascending=[True, False])
+    
+    # The sorted list of project_display
+    sorted_projects = summary['project_display'].tolist()
     
     # Base chart
     base = alt.Chart(df).encode(
-        y=alt.Y("project:N", title="Project", sort=projects)
+        y=alt.Y("project_display:N", title="Project", sort=sorted_projects)
     )
     
     # Bar layer
@@ -51,10 +64,10 @@ def bar_chart_by_project(df):
                 domain=list(AREA_COLORS.keys()),
                 range=list(AREA_COLORS.values())
             ),
-            legend=alt.Legend(title="Área")
+            legend=None
         ),
         tooltip=[
-            "project", 
+            alt.Tooltip("project_display:N", title="Project"), 
             alt.Tooltip("sum(horas):Q", format=".1f", title="Total Hours"),
             "area",
             alt.Tooltip("count()", title="Entries")
@@ -117,7 +130,7 @@ def bar_chart_by_day(df):
                 domain=list(AREA_COLORS.keys()),
                 range=list(AREA_COLORS.values())
             ),
-            legend=alt.Legend(title="Área")
+            legend=None
         ),
         tooltip=[
             alt.Tooltip("date_display:N", title="Date"),
