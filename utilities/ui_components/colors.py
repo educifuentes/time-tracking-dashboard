@@ -4,7 +4,7 @@ AREA_COLORS = {
     "MATR": "#FF00FF", 
     "DOCU": "#7AAACE",
     "FORM": "#9ED5C5",
-    "BREAK": "#BBCB2E",
+    "BREAK": "#A5C89E",
 }
 
 AREA_SORTING = {

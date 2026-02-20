@@ -66,15 +66,33 @@ end_of_month = next_month - timedelta(days=1)
 df_month = df[(df["date"] >= start_of_month) & (df["date"] <= end_of_month)]
 display_dashboard_section(df_month, "Este Mes")
 
-# Layout: Last 15 days by day chart
+# Layout: Dynamic chart for given history
 st.divider()
-st.subheader("Últimos 15 Días")
-start_15_days = today - timedelta(days=14)
-df_15_days = df[(df["date"] >= start_15_days) & (df["date"] <= today)]
 
-if not df_15_days.empty:
-    chart_15_days = bar_chart_by_day(df_15_days)
-    st.altair_chart(chart_15_days, use_container_width=True)
+col_title, col_filter = st.columns([3, 1])
+with col_title:
+    st.subheader("Histórico de Actividades")
+with col_filter:
+    history_option = st.selectbox(
+        "Filtro de Tiempo",
+        ["Últimos 15 Días", "Últimos 30 Días", "Todo el Historial"],
+        label_visibility="collapsed"
+    )
+
+st.write("") # small spacing
+
+if history_option == "Últimos 15 Días":
+    start_date = today - timedelta(days=14)
+    df_history = df[(df["date"] >= start_date) & (df["date"] <= today)]
+elif history_option == "Últimos 30 Días":
+    start_date = today - timedelta(days=29)
+    df_history = df[(df["date"] >= start_date) & (df["date"] <= today)]
 else:
-    st.info("No hay actividades para mostrar en los últimos 15 días.")
+    df_history = df[df["date"] <= today]
+
+if not df_history.empty:
+    history_chart = bar_chart_by_day(df_history)
+    st.altair_chart(history_chart, use_container_width=True)
+else:
+    st.info(f"No hay actividades para mostrar en {history_option.lower()}.")
 
