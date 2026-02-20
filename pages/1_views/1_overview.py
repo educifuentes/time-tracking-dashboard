@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 from models.marts.fct_activities import fct_activities
 
 from utilities.ui_components.render_model import render_model_ui
-from utilities.visulizations.charts import bar_chart_by_project
+from utilities.visulizations.charts import bar_chart_by_project, bar_chart_by_day
 
 from utilities.ui_components.icons import render_icon
 
@@ -65,4 +65,16 @@ end_of_month = next_month - timedelta(days=1)
 
 df_month = df[(df["date"] >= start_of_month) & (df["date"] <= end_of_month)]
 display_dashboard_section(df_month, "Este Mes")
+
+# Layout: Last 15 days by day chart
+st.divider()
+st.subheader("Últimos 15 Días")
+start_15_days = today - timedelta(days=14)
+df_15_days = df[(df["date"] >= start_15_days) & (df["date"] <= today)]
+
+if not df_15_days.empty:
+    chart_15_days = bar_chart_by_day(df_15_days)
+    st.altair_chart(chart_15_days, use_container_width=True)
+else:
+    st.info("No hay actividades para mostrar en los últimos 15 días.")
 

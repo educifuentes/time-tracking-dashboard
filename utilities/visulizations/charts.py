@@ -1,6 +1,7 @@
 import altair as alt
 import pandas as pd
 from utilities.ui_components.colors import AREA_COLORS
+from utilities.ui_components.days_of_week import DAYS_OF_WEEK
 
 # ==========================================
 # Helpers
@@ -75,4 +76,58 @@ def bar_chart_by_project(df):
     return (bars + text).properties(
         width="container",
         height=alt.Step(40), # Dynamic height based on number of projects
+    )
+
+def bar_chart_by_day(df):
+    """
+    Create vertical bar chart for hours worked by date.
+    
+    Args:
+        df: DataFrame with 'date', 'horas', and 'area' columns
+    """
+    
+    # Clean data: drop rows with None or NaN dates
+    df = df.dropna(subset=['date']).copy()
+    
+    # Map to "Dow - Month, Day" format using mapping
+    def format_date_with_dow(dt):
+        if pd.isna(dt): return ""
+        dow = dt.strftime('%A')
+        abreviated_dow = DAYS_OF_WEEK.get(dow, dow[:3]) # Fallback to 3 letters
+        return f"{abreviated_dow} - {dt.strftime('%b, %d')}"
+    
+    df['date_display'] = pd.to_datetime(df['date']).apply(format_date_with_dow)
+    # create original_date for proper sorting on the axis
+    df['original_date'] = pd.to_datetime(df['date']).dt.strftime('%Y-%m-%d')
+    
+    # Base chart
+    base = alt.Chart(df).encode(
+        x=alt.X("date_display:O", title="Date", sort=alt.SortField("original_date"))
+    )
+    
+    # Bar layer
+    bars = base.mark_bar(
+        stroke="slategray",
+        strokeWidth=0.5
+    ).encode(
+        y=alt.Y("sum(horas):Q", title="Total Hours", axis=alt.Axis(format=".1f")),
+        color=alt.Color(
+            "area:N",
+            scale=alt.Scale(
+                domain=list(AREA_COLORS.keys()),
+                range=list(AREA_COLORS.values())
+            ),
+            legend=alt.Legend(title="Área")
+        ),
+        tooltip=[
+            alt.Tooltip("date_display:N", title="Date"),
+            "area",
+            alt.Tooltip("sum(horas):Q", format=".1f", title="Total Hours"),
+            alt.Tooltip("count()", title="Entries")
+        ]
+    )
+    
+    return bars.properties(
+        width="container",
+        height=300
     )
