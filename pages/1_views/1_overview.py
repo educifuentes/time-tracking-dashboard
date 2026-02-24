@@ -17,7 +17,7 @@ st.markdown("Continuos deplyment test")
 # Load data
 df = fct_activities()
 
-st.markdown("Date range " + f"{df['date'].min().date()} - {df['date'].max().date()}")
+st.markdown("Date range " + f"{df['date'].min()} - {df['date'].max()}")
 
 def display_dashboard_section(filtered_df):
     if not filtered_df.empty:
@@ -35,7 +35,7 @@ def display_dashboard_section(filtered_df):
         st.info("No hay actividades registradas.")
 
 # Reference date (Today)
-today = pd.Timestamp.now().normalize()
+today = pd.Timestamp.now().date()
 
 # Layout: Today and This Week in columns
 col1, col2 = st.columns(2)
@@ -43,7 +43,7 @@ col1, col2 = st.columns(2)
 with col1:
     with st.container(height=600):
         st.subheader("Hoy")
-        df_today = df[df["date"].dt.date == today.date()]
+        df_today = df[df["date"] == today]
         display_dashboard_section(df_today)
 
 with col2:

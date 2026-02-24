@@ -144,3 +144,52 @@ def bar_chart_by_day(df):
         width="container",
         height=300
     )
+
+def bar_chart_by_week(df, area_filter=None):
+    """
+    Create vertical bar chart for hours worked by week.
+    
+    Args:
+        df: DataFrame pivoted by week and area
+        area_filter: Optional string to filter by a specific area
+    """
+    if df.empty or "week" not in df.columns:
+        return None
+        
+    areas = [col for col in df.columns if col != 'week']
+    df_melted = df.melt(id_vars=['week'], value_vars=areas, var_name='area', value_name='horas')
+    
+    if area_filter:
+        df_melted = df_melted[df_melted['area'] == area_filter]
+        
+    # Base chart - week on y axis
+    base = alt.Chart(df_melted).encode(
+        y=alt.Y("week:O", title="Semana")
+    )
+    
+    # Bar layer
+    bars = base.mark_bar(
+        stroke="slategray",
+        strokeWidth=0.5
+    ).encode(
+        x=alt.X("horas:Q", title="Total Horas", axis=alt.Axis(format=".1f")),
+        color=alt.Color(
+            "area:N",
+            scale=alt.Scale(
+                domain=list(AREA_COLORS.keys()),
+                range=list(AREA_COLORS.values())
+            ),
+            legend=None
+        ),
+        tooltip=[
+            alt.Tooltip("week:O", title="Semana"),
+            "area",
+            alt.Tooltip("horas:Q", format=".1f", title="Total Horas")
+        ]
+    )
+    
+    return bars.properties(
+        width="container",
+        height=400
+    )
+
