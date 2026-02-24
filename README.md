@@ -12,4 +12,12 @@ Access the Google Cloud Console to manage revisions and billing:
 
 ## Release Process
 
-The project uses CalVer format (`YY.MM.DD`) via Git tags to automatically trigger Cloud Build deployments to Cloud Run. See the full [**Release Process Guide**](guides/release_process.md) for step-by-step instructions.
+The project uses CalVer format (`YY.MM.DD`) via Git tags to automatically trigger Cloud Build deployments to Cloud Run.
+
+To easily tag and release a new version based on today's date, run the following script from the root of the repository:
+
+```bash
+./scripts/release.sh
+```
+
+See the full [**Release Process Guide**](guides/release_process.md) for deeper step-by-step instructions.
