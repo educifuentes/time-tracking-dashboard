@@ -1,8 +1,9 @@
 import pandas as pd
-from models.marts.fct_activities import fct_activities
+
+from models.marts.bi_tables.bi_only_core_areas import bi_only_core_areas
 
 def agg_area_hour_per_week():
-    df = fct_activities()
+    df = bi_only_core_areas()
     
     pivot_df = df.pivot_table(
         index="week",

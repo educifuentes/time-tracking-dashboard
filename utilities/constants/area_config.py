@@ -1,6 +1,6 @@
 AREA_COLORS = {
     "DATA": "#FBB574",
-    "ADM": "#9BB4C0",
+    "ADM": "#BFC6C4",
     "MATR": "#FF00FF", 
     "DOCU": "#7AAACE",
     "FORM": "#9ED5C5",
@@ -24,6 +24,5 @@ AREA_CORE = [
     "MATR",
     "DOCU",
     "FORM",
-    "BREAK",
     "MISC",
 ]

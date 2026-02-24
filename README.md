@@ -9,3 +9,7 @@ The dashboard is deployed on Google Cloud Run:
 
 Access the Google Cloud Console to manage revisions and billing:
 [**Manage Cloud Run**](https://console.cloud.google.com/run/detail/southamerica-west1/time-track-dashboard/revisions?project=personal-dashboards-487913)
+
+## Release Process
+
+The project uses CalVer format (`YY.MM.DD`) via Git tags to automatically trigger Cloud Build deployments to Cloud Run. See the full [**Release Process Guide**](guides/release_process.md) for step-by-step instructions.

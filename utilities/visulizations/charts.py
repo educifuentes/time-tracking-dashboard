@@ -164,7 +164,7 @@ def bar_chart_by_week(df, area_filter=None):
         
     # Base chart - week on y axis
     base = alt.Chart(df_melted).encode(
-        y=alt.Y("week:O", title="Semana")
+        y=alt.Y("week:O", title="Semana", sort='descending')
     )
     
     # Bar layer
@@ -188,7 +188,19 @@ def bar_chart_by_week(df, area_filter=None):
         ]
     )
     
-    return bars.properties(
+    # Text layer for total hours at the end of each bar
+    text = base.mark_text(
+        align='left',
+        baseline='middle',
+        dx=5,
+        fontWeight='bold',
+        color='slategray'
+    ).encode(
+        x=alt.X("sum(horas):Q", stack=None),
+        text=alt.Text("sum(horas):Q", format=".1f")
+    )
+
+    return (bars + text).properties(
         width="container",
         height=400
     )

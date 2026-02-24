@@ -16,7 +16,11 @@ def fct_activities():
     df["month"] = dt_series.dt.month
     df["dow"] = dt_series.dt.dayofweek
     week_start = dt_series - pd.to_timedelta(dt_series.dt.dayofweek, unit='d')
-    df["week"] = "W" + dt_series.dt.isocalendar().week.astype(str).str.zfill(2) + " - " + week_start.dt.strftime('%b %d')
+    
+    # Format week strings using year-Wweek (e.g. 2024-W42 - Oct 14)
+    iso_year = dt_series.dt.isocalendar().year.astype(str)
+    iso_week = dt_series.dt.isocalendar().week.astype(str).str.zfill(2)
+    df["week"] = iso_year + "-W" + iso_week + " - " + week_start.dt.strftime('%b %d')
     
     # Finally, set the date column to only store dates
     df["date"] = dt_series.dt.date
