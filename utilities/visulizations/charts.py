@@ -2,6 +2,7 @@ import altair as alt
 import pandas as pd
 from utilities.constants.area_config import AREA_COLORS, AREA_SORTING
 from utilities.ui_components.days_of_week import DAYS_OF_WEEK
+from utilities.constants.day_codes import DAY_CODES
 
 # ==========================================
 # Helpers
@@ -91,12 +92,13 @@ def bar_chart_by_project(df):
         height=alt.Step(40), # Dynamic height based on number of projects
     )
 
-def bar_chart_by_day(df):
+def bar_chart_by_day(df, short_date_format=False):
     """
     Create vertical bar chart for hours worked by date.
     
     Args:
         df: DataFrame with 'date', 'horas', and 'area' columns
+        short_date_format: If True, uses abbreviated format like 'Mon 12'
     """
     
     # Clean data: drop rows with None or NaN dates
@@ -106,8 +108,12 @@ def bar_chart_by_day(df):
     def format_date_with_dow(dt):
         if pd.isna(dt): return ""
         dow = dt.strftime('%A')
-        abreviated_dow = DAYS_OF_WEEK.get(dow, dow[:3]) # Fallback to 3 letters
-        return f"{abreviated_dow} - {dt.strftime('%b, %d')}"
+        if short_date_format:
+            abreviated_dow = DAY_CODES.get(dow, dow[:3])
+            return f"{abreviated_dow} {dt.day}"
+        else:
+            abreviated_dow = DAYS_OF_WEEK.get(dow, dow[:3]) # Fallback to 3 letters
+            return f"{abreviated_dow} - {dt.strftime('%b, %d')}"
     
     df['date_display'] = pd.to_datetime(df['date']).apply(format_date_with_dow)
     # create original_date for proper sorting on the axis
@@ -115,7 +121,7 @@ def bar_chart_by_day(df):
     
     # Base chart
     base = alt.Chart(df).encode(
-        x=alt.X("date_display:O", title="Date", sort=alt.SortField("original_date"))
+        y=alt.Y("date_display:O", title="Date", sort=alt.SortField("original_date"))
     )
     
     # Bar layer
@@ -123,7 +129,7 @@ def bar_chart_by_day(df):
         stroke="slategray",
         strokeWidth=0.5
     ).encode(
-        y=alt.Y("sum(horas):Q", title="Total Hours", axis=alt.Axis(format=".1f")),
+        x=alt.X("sum(horas):Q", title="Total Hours", axis=alt.Axis(format=".1f")),
         color=alt.Color(
             "area:N",
             scale=alt.Scale(
@@ -140,7 +146,19 @@ def bar_chart_by_day(df):
         ]
     )
     
-    return bars.properties(
+    # Text layer for total hours at the end of each bar
+    text = base.mark_text(
+        align='left',
+        baseline='middle',
+        dx=5,
+        fontWeight='bold',
+        color='gray'
+    ).encode(
+        x=alt.X("sum(horas):Q", stack=None),
+        text=alt.Text("sum(horas):Q", format=".1f")
+    )
+    
+    return (bars + text).properties(
         width="container",
         height=300
     )
