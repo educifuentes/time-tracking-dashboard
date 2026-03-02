@@ -1,11 +1,11 @@
 AREA_COLORS = {
-    "DATA": "#FBB574",
-    "ADM": "#BFC6C4",
-    "MATR": "#FF00FF", 
-    "DOCU": "#7AAACE",
-    "FORM": "#9ED5C5",
+    "DATA": "#FB773C",
+    "ADM": "#7077A1",
+    "MATR": "#8C00FF", 
+    "DOCU": "#77B0AA",
+    "FORM": "#A1C2BD",
     "BREAK": "#A5C89E",
-    "MISC": "#D9D9D9",
+    "MISC": "#234C6A",
 }
 
 AREA_SORTING = {

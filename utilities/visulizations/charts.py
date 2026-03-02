@@ -92,17 +92,23 @@ def bar_chart_by_project(df):
         height=alt.Step(40), # Dynamic height based on number of projects
     )
 
-def bar_chart_by_day(df, short_date_format=False):
+def bar_chart_by_day(df, short_date_format=False, area_filter=None):
     """
     Create vertical bar chart for hours worked by date.
     
     Args:
         df: DataFrame with 'date', 'horas', and 'area' columns
         short_date_format: If True, uses abbreviated format like 'Mon 12'
+        area_filter: Optional string to filter by a specific area
     """
-    
+    if df.empty or "date" not in df.columns:
+        return None
+        
     # Clean data: drop rows with None or NaN dates
     df = df.dropna(subset=['date']).copy()
+    
+    if area_filter:
+        df = df[df['area'] == area_filter]
     
     # Map to "Dow - Month, Day" format using mapping
     def format_date_with_dow(dt):
@@ -121,7 +127,7 @@ def bar_chart_by_day(df, short_date_format=False):
     
     # Base chart
     base = alt.Chart(df).encode(
-        y=alt.Y("date_display:O", title="Date", sort=alt.SortField("original_date"))
+        y=alt.Y("date_display:O", title="Fecha", sort=alt.SortField("original_date"))
     )
     
     # Bar layer
@@ -129,19 +135,19 @@ def bar_chart_by_day(df, short_date_format=False):
         stroke="slategray",
         strokeWidth=0.5
     ).encode(
-        x=alt.X("sum(horas):Q", title="Total Hours", axis=alt.Axis(format=".1f")),
+        x=alt.X("sum(horas):Q", title="Total Horas", axis=alt.Axis(format=".1f")),
         color=alt.Color(
             "area:N",
             scale=alt.Scale(
                 domain=list(AREA_COLORS.keys()),
                 range=list(AREA_COLORS.values())
             ),
-            legend=None
+            legend=alt.Legend(orient="bottom", title=None)
         ),
         tooltip=[
-            alt.Tooltip("date_display:N", title="Date"),
+            alt.Tooltip("date_display:N", title="Fecha"),
             "area",
-            alt.Tooltip("sum(horas):Q", format=".1f", title="Total Hours"),
+            alt.Tooltip("sum(horas):Q", format=".1f", title="Total Horas"),
             alt.Tooltip("count()", title="Entries")
         ]
     )
@@ -152,7 +158,7 @@ def bar_chart_by_day(df, short_date_format=False):
         baseline='middle',
         dx=5,
         fontWeight='bold',
-        color='gray'
+        color='slategray'
     ).encode(
         x=alt.X("sum(horas):Q", stack=None),
         text=alt.Text("sum(horas):Q", format=".1f")
@@ -160,7 +166,7 @@ def bar_chart_by_day(df, short_date_format=False):
     
     return (bars + text).properties(
         width="container",
-        height=300
+        height=400
     )
 
 def bar_chart_by_week(df, area_filter=None):
