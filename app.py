@@ -18,6 +18,7 @@ st.set_page_config(
 # Section - Reports
 overview_page = st.Page("pages/1_views/1_overview.py", title="Overview", icon=render_icon("logo"))
 trends_page = st.Page("pages/1_views/2_trends.py", title="Trends", icon=render_icon("logo"))
+projects_page = st.Page("pages/1_views/3_proyectos.py", title="Projects", icon=render_icon("logo"))
 
 # Section - Tools
 documentation_page = st.Page("pages/2_tools/1_documentation.py", title="Documentation", icon=render_icon("documentation"))
@@ -32,7 +33,7 @@ bi_tables_page = st.Page("pages/3_dev/4_bi_tables.py", title="BI Tables", icon=r
 
 # current page
 nav_pages = {
-    "Reports": [overview_page, trends_page],
+    "Reports": [overview_page, trends_page, projects_page],
     "Tools": [documentation_page, validations_page, explorer_page]
 }
 
