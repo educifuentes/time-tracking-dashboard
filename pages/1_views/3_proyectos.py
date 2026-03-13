@@ -19,33 +19,9 @@ if df.empty:
     st.stop()
 
 
-
-# ==========================================
-# Section 1: Tabs per Area
-# ==========================================
-tab_labels = ["All"] + AREA_CORE
-tabs = st.tabs(tab_labels)
-
-for tab, label in zip(tabs, tab_labels):
-    with tab:
-        if label == "All":
-            df_tab = df.copy()
-        else:
-            df_tab = df[df["area"] == label].copy()
-
-        df_tab = df_tab.dropna(subset=["project"])
-        df_tab = df_tab[df_tab["project"].astype(str).str.strip() != ""]
-
-        if df_tab.empty:
-            st.info("No hay actividades para esta área.")
-        else:
-            chart = bar_chart_by_project(df_tab, add_area_prefix=False)
-            st.altair_chart(chart, use_container_width=True)
-
 # ==========================================
 # Section 2: Project Detail Drill-down
 # ==========================================
-st.divider()
 st.subheader("Detalle por Proyecto")
 
 # Build sorted project list for the selectbox
@@ -108,3 +84,28 @@ if selected_project:
         )
 
         st.altair_chart(chart_proj + text_proj, use_container_width=True)
+
+# ==========================================
+# Section 1: Tabs per Area
+# ==========================================
+st.divider()
+
+tab_labels = ["All"] + sorted(AREA_CORE, key=lambda a: AREA_SORTING.get(a, 99))
+tabs = st.tabs(tab_labels)
+
+for tab, label in zip(tabs, tab_labels):
+    with tab:
+        if label == "All":
+            df_tab = df.copy()
+        else:
+            df_tab = df[df["area"] == label].copy()
+
+        df_tab = df_tab.dropna(subset=["project"])
+        df_tab = df_tab[df_tab["project"].astype(str).str.strip() != ""]
+
+        if df_tab.empty:
+            st.info("No hay actividades para esta área.")
+        else:
+            chart = bar_chart_by_project(df_tab, add_area_prefix=False)
+            st.altair_chart(chart, use_container_width=True, height=600)
+
