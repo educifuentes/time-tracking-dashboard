@@ -3,6 +3,7 @@ import pandas as pd
 from utilities.constants.area_config import AREA_COLORS, AREA_SORTING
 from utilities.ui_components.days_of_week import DAYS_OF_WEEK
 from utilities.constants.day_codes import DAY_CODES
+from utilities.constants.targets import HOUR_TARGET_BY_AREA
 
 # ==========================================
 # Helpers
@@ -127,7 +128,7 @@ def bar_chart_by_area(df):
         stroke="slategray",
         strokeWidth=0.5
     ).encode(
-        x=alt.X("horas:Q", title="Total Horas", axis=alt.Axis(format=".1f")),
+        x=alt.X("horas:Q", title="Total Horas", scale=alt.Scale(domain=[0, 25]), axis=alt.Axis(format="d")),
         color=alt.Color(
             "area:N",
             scale=alt.Scale(
@@ -153,7 +154,28 @@ def bar_chart_by_area(df):
         text=alt.Text("horas:Q", format=".1f")
     )
 
-    return (bars + text).properties(
+    # Build a vertical tick for each present area at the target value
+    targets_data = pd.DataFrame([
+        {"area": a, "target": HOUR_TARGET_BY_AREA[a]}
+        for a in present_areas
+        if a in HOUR_TARGET_BY_AREA
+    ])
+
+    if not targets_data.empty:
+        target_rules = alt.Chart(targets_data).mark_tick(
+            color="red",
+            thickness=2,
+            strokeDash=[4, 3]
+        ).encode(
+            x=alt.X("target:Q"),
+            y=alt.Y("area:N", sort=present_areas),
+            tooltip=[alt.Tooltip("area:N", title="Área"), alt.Tooltip("target:Q", title="Objetivo")]
+        )
+        chart = bars + text + target_rules
+    else:
+        chart = bars + text
+
+    return chart.properties(
         width="container",
         height=alt.Step(40)
     )
