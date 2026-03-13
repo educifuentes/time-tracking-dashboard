@@ -6,6 +6,7 @@ from models.marts.fct_activities import fct_activities
 
 from utilities.ui_components.render_model import render_model_ui
 from utilities.visulizations.charts import bar_chart_by_project, bar_chart_by_day, bar_chart_by_area
+from utilities.constants.day_codes import DAYS_ES, MONTHS_ES
 
 from utilities.ui_components.icons import render_icon
 
@@ -38,6 +39,8 @@ col1, col2 = st.columns(2)
 
 with col1:
     st.subheader("Hoy")
+    today_fmt = f"{DAYS_ES[today.weekday()]} {today.day}, {MONTHS_ES[today.month - 1]}"
+    st.caption(today_fmt)
     df_today = df[df["date"] == today]
     display_dashboard_section(df_today)
 
