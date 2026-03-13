@@ -10,8 +10,8 @@ from utilities.visulizations.charts import bar_chart_by_project, bar_chart_by_da
 from utilities.ui_components.icons import render_icon
 
 st.title(f"{render_icon('logo')} Horas")
-st.markdown("Continuos deplyment test")
 
+st.markdown("[Ir a Ghseet](https://docs.google.com/spreadsheets/d/1I-nQVWT9XP1p0DLbgvpCMWjzQ8i6CqbTM1E9g4oCzDY/edit?gid=1838766383#gid=1838766383)")
     
 
 # Load data

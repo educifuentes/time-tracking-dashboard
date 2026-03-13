@@ -200,7 +200,7 @@ def bar_chart_by_week(df, area_filter=None):
         stroke="slategray",
         strokeWidth=0.5
     ).encode(
-        x=alt.X("horas:Q", title="Total Horas", axis=alt.Axis(format=".1f")),
+        x=alt.X("horas:Q", title="Total Horas", scale=alt.Scale(domain=[0, 50]), axis=alt.Axis(format="d")),
         color=alt.Color(
             "area:N",
             scale=alt.Scale(
