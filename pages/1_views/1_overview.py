@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 from models.marts.fct_activities import fct_activities
 
 from utilities.ui_components.render_model import render_model_ui
-from utilities.visulizations.charts import bar_chart_by_project, bar_chart_by_day
+from utilities.visulizations.charts import bar_chart_by_project, bar_chart_by_day, bar_chart_by_area
 
 from utilities.ui_components.icons import render_icon
 
@@ -27,10 +27,6 @@ def display_dashboard_section(filtered_df):
         
         chart = bar_chart_by_project(filtered_df)
         st.altair_chart(chart, use_container_width=True)
-        
-        st.divider()
-        with st.expander("Ver Detalle de Actividades"):
-            render_model_ui(filtered_df)
     else:
         st.info("No hay actividades registradas.")
 
@@ -41,39 +37,44 @@ today = pd.Timestamp.now(tz='America/Santiago').date()
 col1, col2 = st.columns(2)
 
 with col1:
-    with st.container(height=600):
-        st.subheader("Hoy")
-        df_today = df[df["date"] == today]
-        display_dashboard_section(df_today)
+    st.subheader("Hoy")
+    df_today = df[df["date"] == today]
+    display_dashboard_section(df_today)
 
 with col2:
-    with st.container(height=600):
-        st.subheader("Semana")
-        # Calculations for "This Week" (Monday to Sunday)
-        start_of_week = today - timedelta(days=today.weekday())
-        end_of_week = start_of_week + timedelta(days=6)
+    st.subheader("Semana")
+
+    # Calculations for "This Week" (Monday to Sunday)
+    start_of_week = today - timedelta(days=today.weekday())
+    end_of_week = start_of_week + timedelta(days=6)
+    iso_week = today.isocalendar()[1]
+    week_start_fmt = pd.Timestamp(start_of_week).strftime("%b %-d")
+    week_today_fmt = pd.Timestamp(today).strftime("%b %-d")
+    st.caption(f"W{iso_week} · {week_start_fmt} — {week_today_fmt}")
+    
+    df_week = df[(df["date"] >= start_of_week) & (df["date"] <= end_of_week)]
+    
+    if not df_week.empty:
+        total_hours = df_week["horas"].sum()
+        st.metric("Total Horas", f"{total_hours:.1f}h")
         
-        df_week = df[(df["date"] >= start_of_week) & (df["date"] <= end_of_week)]
+        tab1, tab2, tab3 = st.tabs(["by Area", "Daily", "by Project"])
+
+
+        with tab1:
+            chart_area = bar_chart_by_area(df_week)
+            st.altair_chart(chart_area, use_container_width=True)
         
-        if not df_week.empty:
-            total_hours = df_week["horas"].sum()
-            st.metric("Total Horas", f"{total_hours:.1f}h")
+        with tab3:
+            chart_daily = bar_chart_by_day(df_week, short_date_format=True)
+            st.altair_chart(chart_daily, use_container_width=True)
             
-            tab1, tab2 = st.tabs(["Daily", "by Project"])
-            
-            with tab1:
-                chart_daily = bar_chart_by_day(df_week, short_date_format=True)
-                st.altair_chart(chart_daily, use_container_width=True)
-                
-            with tab2:
-                chart_proj = bar_chart_by_project(df_week)
-                st.altair_chart(chart_proj, use_container_width=True)
-                
-            st.divider()
-            with st.expander("Ver Detalle de Actividades"):
-                render_model_ui(df_week)
-        else:
-            st.info("No hay actividades registradas en la semana.")
+        with tab2:
+            chart_proj = bar_chart_by_project(df_week)
+            st.altair_chart(chart_proj, use_container_width=True)
+
+    else:
+        st.info("No hay actividades registradas en la semana.")
 
 # Layout: This Month at the bottom
 st.divider()

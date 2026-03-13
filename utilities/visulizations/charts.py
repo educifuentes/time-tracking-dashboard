@@ -96,6 +96,68 @@ def bar_chart_by_project(df, add_area_prefix=True):
         height=alt.Step(40), # Dynamic height based on number of projects
     )
 
+def bar_chart_by_area(df):
+    """
+    Create horizontal bar chart for total hours per area.
+    Only areas present in the input df are shown (avoids categorical bleed-through).
+
+    Args:
+        df: DataFrame with 'area' and 'horas' columns
+    """
+    if df.empty or "area" not in df.columns:
+        return None
+
+    # Cast to str to shed any Categorical dtype (which would preserve all levels)
+    df = df.copy()
+    df["area"] = df["area"].astype(str)
+    df = df[df["area"].isin(["DATA", "MATR", "DOCU"])]
+    if df.empty:
+        return None
+
+    summary = df.groupby("area", sort=False)["horas"].sum().reset_index()
+    # Keep only areas that actually have hours
+    summary = summary[summary["horas"] > 0]
+    present_areas = [a for a in ["DATA", "MATR", "DOCU"] if a in summary["area"].values]
+
+    base = alt.Chart(summary).encode(
+        y=alt.Y("area:N", title="Área", sort=present_areas)
+    )
+
+    bars = base.mark_bar(
+        stroke="slategray",
+        strokeWidth=0.5
+    ).encode(
+        x=alt.X("horas:Q", title="Total Horas", axis=alt.Axis(format=".1f")),
+        color=alt.Color(
+            "area:N",
+            scale=alt.Scale(
+                domain=list(AREA_COLORS.keys()),
+                range=list(AREA_COLORS.values())
+            ),
+            legend=None
+        ),
+        tooltip=[
+            alt.Tooltip("area:N", title="Área"),
+            alt.Tooltip("horas:Q", format=".1f", title="Total Horas")
+        ]
+    )
+
+    text = base.mark_text(
+        align="left",
+        baseline="middle",
+        dx=5,
+        fontWeight="bold",
+        color="gray"
+    ).encode(
+        x=alt.X("horas:Q", stack=None),
+        text=alt.Text("horas:Q", format=".1f")
+    )
+
+    return (bars + text).properties(
+        width="container",
+        height=alt.Step(40)
+    )
+
 def bar_chart_by_day(df, short_date_format=False, area_filter=None):
     """
     Create vertical bar chart for hours worked by date.
