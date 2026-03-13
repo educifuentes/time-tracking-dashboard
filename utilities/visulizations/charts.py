@@ -20,12 +20,13 @@ def get_projects_ranked_by_hours(df):
 # ==========================================
 # Project & Hours Charts
 # ==========================================
-def bar_chart_by_project(df):
+def bar_chart_by_project(df, add_area_prefix=True):
     """
     Create horizontal bar chart for hours worked by project.
     
     Args:
         df: DataFrame with 'project' and 'horas' columns
+        add_area_prefix: If True (default), Y axis shows 'AREA - Project'. If False, shows just project name.
     """
     
     # Clean data: drop rows with None, NaN or empty project names
@@ -35,7 +36,10 @@ def bar_chart_by_project(df):
     # Sort DataFrame by AREA_SORTING mapping, then by total hours descending. 
     # To do this correctly: get hours per project_display, map area sorting, and sort.
     # We will build a helper dataframe for the sort order.
-    df['project_display'] = df['area'].astype(str) + " - " + df['project'].astype(str)
+    if add_area_prefix:
+        df['project_display'] = df['area'].astype(str) + " - " + df['project'].astype(str)
+    else:
+        df['project_display'] = df['project'].astype(str)
     
     # Calculate sum per project_display for the secondary sort
     summary = df.groupby(['project_display', 'area'])['horas'].sum().reset_index()
