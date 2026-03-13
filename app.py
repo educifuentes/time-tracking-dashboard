@@ -1,6 +1,9 @@
 import streamlit as st
 import os
+
 from utilities.ui_components.icons import render_icon
+from utilities.app_version import get_app_version
+
 
 
 # ==========================================
@@ -52,5 +55,7 @@ with st.sidebar:
     if st.button("Refresh Gsheet Data", icon=":material/refresh:", type="primary", use_container_width=True):
         st.cache_data.clear()
         st.rerun()
+    app_version = get_app_version()
+    st.caption(f"App Version: {app_version}")
 
 pg.run()
