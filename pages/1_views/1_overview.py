@@ -35,7 +35,7 @@ def display_dashboard_section(filtered_df):
         st.info("No hay actividades registradas.")
 
 # Reference date (Today)
-today = pd.Timestamp.now().date()
+today = pd.Timestamp.now(tz='America/Santiago').date()
 
 # Layout: Today and This Week in columns
 col1, col2 = st.columns(2)
