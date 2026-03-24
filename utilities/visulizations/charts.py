@@ -111,14 +111,17 @@ def bar_chart_by_area(df):
     # Cast to str to shed any Categorical dtype (which would preserve all levels)
     df = df.copy()
     df["area"] = df["area"].astype(str)
-    df = df[df["area"].isin(["DATA", "MATR", "DOCU"])]
     if df.empty:
         return None
 
     summary = df.groupby("area", sort=False)["horas"].sum().reset_index()
     # Keep only areas that actually have hours
     summary = summary[summary["horas"] > 0]
-    present_areas = [a for a in ["DATA", "MATR", "DOCU"] if a in summary["area"].values]
+    
+    # Sort areas by AREA_SORTING mapping
+    summary['sort_idx'] = summary['area'].map(lambda x: AREA_SORTING.get(x, 99))
+    summary = summary.sort_values('sort_idx')
+    present_areas = summary["area"].tolist()
 
     base = alt.Chart(summary).encode(
         y=alt.Y("area:N", title="Área", sort=present_areas)
