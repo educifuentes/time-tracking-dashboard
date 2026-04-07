@@ -9,5 +9,5 @@ from utilities.ui_components.icons import render_icon
 st.title(f"Staging: Horas {render_icon('horas')}")
 
 horas_df = stg_horas()
-render_model_ui(horas_df)
+render_model_ui(horas_df, table_name="gsheets__stg_horas")
 

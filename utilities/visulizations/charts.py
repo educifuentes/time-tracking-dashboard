@@ -111,12 +111,12 @@ def bar_chart_by_area(df):
     # Cast to str to shed any Categorical dtype (which would preserve all levels)
     df = df.copy()
     df["area"] = df["area"].astype(str)
-    if df.empty:
-        return None
 
     summary = df.groupby("area", sort=False)["horas"].sum().reset_index()
-    # Keep only areas that actually have hours
-    summary = summary[summary["horas"] > 0]
+    
+    # Guarantee all areas are present, even if they have 0 hours
+    all_areas_df = pd.DataFrame({"area": list(AREA_COLORS.keys())})
+    summary = all_areas_df.merge(summary, on="area", how="left").fillna({"horas": 0})
     
     # Sort areas by AREA_SORTING mapping
     summary['sort_idx'] = summary['area'].map(lambda x: AREA_SORTING.get(x, 99))
@@ -183,7 +183,7 @@ def bar_chart_by_area(df):
         height=alt.Step(40)
     )
 
-def bar_chart_by_day(df, short_date_format=False, area_filter=None):
+def bar_chart_by_day(df, short_date_format=False, area_filter=None, sort_descending=False):
     """
     Create vertical bar chart for hours worked by date.
     
@@ -191,6 +191,7 @@ def bar_chart_by_day(df, short_date_format=False, area_filter=None):
         df: DataFrame with 'date', 'horas', and 'area' columns
         short_date_format: If True, uses abbreviated format like 'Mon 12'
         area_filter: Optional string to filter by a specific area
+        sort_descending: If True, sorts dates from most recent to oldest
     """
     if df.empty or "date" not in df.columns:
         return None
@@ -217,8 +218,12 @@ def bar_chart_by_day(df, short_date_format=False, area_filter=None):
     df['original_date'] = pd.to_datetime(df['date']).dt.strftime('%Y-%m-%d')
     
     # Base chart
+    # Sort the dataframe to get the exact order of 'date_display' we want
+    sorted_df = df[['date_display', 'original_date']].drop_duplicates().sort_values('original_date', ascending=not sort_descending)
+    sorted_dates = sorted_df['date_display'].tolist()
+    
     base = alt.Chart(df).encode(
-        y=alt.Y("date_display:O", title="Fecha", sort=alt.SortField("original_date"))
+        y=alt.Y("date_display:O", title="Fecha", sort=sorted_dates)
     )
     
     # Bar layer

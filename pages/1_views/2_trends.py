@@ -2,10 +2,13 @@ import streamlit as st
 import pandas as pd
 import altair as alt
 
+from datetime import timedelta
+
 from models.marts.aggregations.agg_area_hour_per_week import agg_area_hour_per_week
+from models.marts.fct_activities import fct_activities
 
 from utilities.ui_components.icons import render_icon
-from utilities.visulizations.charts import bar_chart_by_week
+from utilities.visulizations.charts import bar_chart_by_week, bar_chart_by_day
 
 st.title(f"{render_icon('logo')} Trends")
 st.markdown("Horas semanales por área")
@@ -43,3 +46,36 @@ if not df.empty:
             
 else:
     st.info("No hay actividades registradas.")
+
+st.divider()
+
+st.subheader("Tendencia Diaria")
+
+# Daily Activities Data for the Daily Trends
+df_act = fct_activities()
+today = pd.Timestamp.now(tz='America/Santiago').date()
+
+col_filter, col_dummy1, col_dummy2 = st.columns(3)
+with col_filter:
+    history_option = st.selectbox(
+        "Filtro de Tiempo",
+        ["Últimos 15 Días", "Últimos 30 Días", "Todo el Historial"],
+        label_visibility="collapsed"
+    )
+
+st.write("") # small spacing
+
+if history_option == "Últimos 15 Días":
+    start_date = today - timedelta(days=14)
+    df_history = df_act[(df_act["date"] >= start_date) & (df_act["date"] <= today)]
+elif history_option == "Últimos 30 Días":
+    start_date = today - timedelta(days=29)
+    df_history = df_act[(df_act["date"] >= start_date) & (df_act["date"] <= today)]
+else:
+    df_history = df_act[df_act["date"] <= today]
+
+if not df_history.empty:
+    history_chart = bar_chart_by_day(df_history, sort_descending=True)
+    st.altair_chart(history_chart, use_container_width=True)
+else:
+    st.info(f"No hay actividades para mostrar en {history_option.lower()}.")

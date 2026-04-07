@@ -26,7 +26,6 @@ projects_page = st.Page("pages/1_views/3_proyectos.py", title="Projects", icon=r
 # Section - Tools
 documentation_page = st.Page("pages/2_tools/1_documentation.py", title="Documentation", icon=render_icon("documentation"))
 validations_page = st.Page("pages/2_tools/2_validations.py", title="Validations", icon=render_icon("warning"))
-explorer_page = st.Page("pages/2_tools/3_explorer.py", title="Explorer", icon=render_icon("search"))
 
 # Section - Dev
 staging_page = st.Page("pages/3_dev/1_staging.py", title="Staging", icon=render_icon("horas"))
@@ -37,7 +36,7 @@ bi_tables_page = st.Page("pages/3_dev/4_bi_tables.py", title="BI Tables", icon=r
 # current page
 nav_pages = {
     "Reports": [overview_page, trends_page, projects_page],
-    "Tools": [documentation_page, validations_page, explorer_page]
+    "Tools": [documentation_page, validations_page]
 }
 
 # Environment check (Local vs Cloud)
