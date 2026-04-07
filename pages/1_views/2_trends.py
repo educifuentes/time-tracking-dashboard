@@ -7,8 +7,8 @@ from datetime import timedelta
 from models.marts.aggregations.agg_area_hour_per_week import agg_area_hour_per_week
 from models.marts.fct_activities import fct_activities
 
-from utilities.ui_components.icons import render_icon
-from utilities.visulizations.charts import bar_chart_by_week, bar_chart_by_day
+from helpers.ui_components.icons import render_icon
+from helpers.visulizations.charts import bar_chart_by_week, bar_chart_by_day
 
 st.title(f"{render_icon('logo')} Trends")
 st.markdown("Horas semanales por área")

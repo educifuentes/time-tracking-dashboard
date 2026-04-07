@@ -1,5 +1,5 @@
-from utilities.data_connections.connect_gsheets import load_data_gsheets
-from utilities.ui_components.yaml_loader import get_table_config
+from helpers.data_connections.connect_gsheets import load_data_gsheets
+from helpers.ui_components.yaml_loader import get_table_config
 
 def stg_horas():
     # Load configuration from YAML

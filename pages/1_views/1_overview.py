@@ -4,11 +4,11 @@ from datetime import datetime, timedelta
 
 from models.marts.fct_activities import fct_activities
 
-from utilities.ui_components.render_model import render_model_ui
-from utilities.visulizations.charts import bar_chart_by_project, bar_chart_by_day, bar_chart_by_area
-from utilities.constants.day_codes import DAYS_ES, MONTHS_ES
+from helpers.ui_components.render_model import render_model_ui
+from helpers.visulizations.charts import bar_chart_by_project, bar_chart_by_day, bar_chart_by_area
+from helpers.constants.day_codes import DAYS_ES, MONTHS_ES
 
-from utilities.ui_components.icons import render_icon
+from helpers.ui_components.icons import render_icon
 
 st.title(f"{render_icon('logo')} Horas")
 

@@ -2,8 +2,8 @@ import streamlit as st
 
 from models.marts.bi_tables.bi_only_core_areas import bi_only_core_areas
 
-from utilities.ui_components.icons import render_icon
-from utilities.ui_components.render_model import render_model_ui
+from helpers.ui_components.icons import render_icon
+from helpers.ui_components.render_model import render_model_ui
 
 st.title(f"{render_icon('logo')} BI Tables")
 st.markdown("Exploración de tablas BI")

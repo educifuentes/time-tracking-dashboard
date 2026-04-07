@@ -4,9 +4,9 @@ import altair as alt
 
 from models.marts.fct_activities import fct_activities
 
-from utilities.ui_components.icons import render_icon
-from utilities.constants.area_config import AREA_SORTING, AREA_COLORS, AREA_CORE
-from utilities.visulizations.charts import bar_chart_by_project
+from helpers.ui_components.icons import render_icon
+from helpers.constants.area_config import AREA_SORTING, AREA_COLORS, AREA_CORE
+from helpers.visulizations.charts import bar_chart_by_project
 
 st.title(f"{render_icon('logo')} Proyectos")
 st.markdown("Detalle del tiempo registrado por proyecto")

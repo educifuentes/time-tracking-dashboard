@@ -1,8 +1,8 @@
 import streamlit as st
 import os
 
-from utilities.ui_components.icons import render_icon
-from utilities.app_version import get_git_version
+from helpers.ui_components.icons import render_icon
+from helpers.app_version import get_git_version
 
 
 

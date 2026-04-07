@@ -1,5 +1,5 @@
 import streamlit as st
-from utilities.ui_components.icons import render_icon
+from helpers.ui_components.icons import render_icon
 
 from models.marts.fct_activities import fct_activities
 
