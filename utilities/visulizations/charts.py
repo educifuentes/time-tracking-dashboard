@@ -1,6 +1,6 @@
 import altair as alt
 import pandas as pd
-from utilities.constants.area_config import AREA_COLORS, AREA_SORTING
+from utilities.constants.area_config import AREA_COLORS, AREA_SORTING, AREA_CORE
 from utilities.ui_components.days_of_week import DAYS_OF_WEEK
 from utilities.constants.day_codes import DAY_CODES
 from utilities.constants.targets import HOUR_TARGET_BY_AREA
@@ -114,8 +114,8 @@ def bar_chart_by_area(df):
 
     summary = df.groupby("area", sort=False)["horas"].sum().reset_index()
     
-    # Guarantee all areas are present, even if they have 0 hours
-    all_areas_df = pd.DataFrame({"area": list(AREA_COLORS.keys())})
+    # Guarantee all core areas are present, even if they have 0 hours. Drop any non-core areas.
+    all_areas_df = pd.DataFrame({"area": AREA_CORE})
     summary = all_areas_df.merge(summary, on="area", how="left").fillna({"horas": 0})
     
     # Sort areas by AREA_SORTING mapping
@@ -238,7 +238,7 @@ def bar_chart_by_day(df, short_date_format=False, area_filter=None, sort_descend
                 domain=list(AREA_COLORS.keys()),
                 range=list(AREA_COLORS.values())
             ),
-            legend=alt.Legend(orient="bottom", title=None)
+            legend=None
         ),
         tooltip=[
             alt.Tooltip("date_display:N", title="Fecha"),

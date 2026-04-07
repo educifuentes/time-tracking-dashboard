@@ -14,8 +14,6 @@ AREA_SORTING = {
     "MATR": 3,
     "DOCU": 2,
     "FORM": 4,
-    "BREAK": 6,
-    "MISC": 7,
 }
 
 AREA_CORE = [
@@ -23,6 +21,4 @@ AREA_CORE = [
     "ADM",
     "MATR",
     "DOCU",
-    "FORM",
-    "MISC",
 ]
