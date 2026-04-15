@@ -11,6 +11,6 @@ st.markdown("Exploración de tablas BI")
 st.subheader("bi_only_core_areas")
 df = bi_only_core_areas()
 if not df.empty:
-    render_model_ui(df)
+    render_model_ui(df, "bi_only_core_areas")
 else:
     st.info("No hay datos en esta tabla.")

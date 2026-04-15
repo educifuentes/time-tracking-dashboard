@@ -47,7 +47,19 @@ def fct_activities():
     
 
     # reorder columns
-    df = df[["date", "year", "month", "dow", "week", "area", "project", "task", "subtask", "min", "horas", "note"]]
+    df = df[["date",
+             "year", 
+             "month", 
+             "dow", 
+             "week", 
+             "area", 
+             "subarea",
+             "project", 
+             "task", 
+             "subtask", 
+             "min", 
+             "horas", 
+             "note"]]
 
 
     return df
