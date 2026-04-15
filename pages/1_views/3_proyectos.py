@@ -20,7 +20,7 @@ if df.empty:
 
 
 # Define the areas to show in tabs
-tab_areas = ["MATR", "DOCU", "DATA", "Todas"]
+tab_areas = ["DATA", "MATR", "DOCU", "Todas"]
 tabs = st.tabs(tab_areas)
 
 for tab, current_area in zip(tabs, tab_areas):
@@ -36,12 +36,12 @@ for tab, current_area in zip(tabs, tab_areas):
         # ==========================================
         st.subheader("Detalle por Proyecto")
         
-        # Build sorted project list for the selectbox
-        summary = df_area.groupby('project', observed=False)['horas'].sum().reset_index()
-        summary = summary.sort_values(by='horas', ascending=False)
+        # Build project list sorted by most recent activity date
+        project_recency = df_area.groupby('project', observed=False)['date'].max().reset_index()
+        project_recency = project_recency.sort_values(by='date', ascending=False)
         
         valid_projects = [
-            p for p in summary['project'].tolist()
+            p for p in project_recency['project'].tolist()
             if str(p).strip() != "" and str(p) != "nan"
         ]
         

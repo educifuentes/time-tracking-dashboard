@@ -23,7 +23,7 @@ The deployment process is automated via the `scripts/deploy.sh` script.
 
 ### 1. Upload Secrets
 
-Before deploying, ensure your local secrets in `.streamlit/secrets.toml` are uploaded to Google Secret Manager. The deployment script handles this calling `scripts/upload_secrets.sh`, but you can also run it manually:
+Before deploying, ensure your cliente secrets in `.streamlit/secrets.toml` are uploaded to Google Secret Manager. The deployment script handles this calling `scripts/upload_secrets.sh`, but you can also run it manually:
 
 ```bash
 ./scripts/upload_secrets.sh
@@ -133,8 +133,8 @@ Cloud Build will automatically intercept the `v1.0.0` tag, use `cloudbuild.yaml`
 
 Since `.streamlit/secrets.toml` is **not** in your repository, updating secrets requires a manual step.
 
-- Run the provided script to upload your local secrets and configure the running service to use them:
+- Run the provided script to upload your cliente secrets and configure the running service to use them:
   ```bash
   ./scripts/update_cloud_run_secrets.sh
   ```
-- This script uploads the current state of your local `.streamlit/secrets.toml` to Secret Manager and updates the Cloud Run service to mount it.
+- This script uploads the current state of your cliente `.streamlit/secrets.toml` to Secret Manager and updates the Cloud Run service to mount it.

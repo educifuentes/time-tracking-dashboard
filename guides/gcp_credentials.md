@@ -15,7 +15,7 @@ If you haven't already, create a new project in the Google Cloud Console.
 
 ```bash
 # Create a new project (replace [PROJECT_ID] with your desired ID)
-gcloud projects create [PROJECT_ID] --name="Time Track Dashboard"
+gcloud projects create [PROJECT_ID] --name="Spendee Expenses Dashboard"
 
 # Set the project as the default for gcloud
 gcloud config set project [PROJECT_ID]
@@ -39,12 +39,12 @@ It's best practice to use a Service Account for deployment or specific applicati
 ```bash
 # Create a service account
 gcloud iam service-accounts create time-track-deployer \
-    --display-name="Time Track Deployer"
+    --display-name="Spendee Expenses Deployer"
 ```
 
 ### 4. Create and Download Service Account Key
 
-To use the service account from your local machine (e.g., for uploading secrets or running scripts locally), you need a JSON key file.
+To use the service account from your cliente machine (e.g., for uploading secrets or running scripts locally), you need a JSON key file.
 
 > [!WARNING]
 > **Security Warning**: Never commit your JSON key file to version control. Ensure `.secrets/` is in your `.gitignore` file.

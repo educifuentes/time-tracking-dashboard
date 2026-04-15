@@ -59,7 +59,8 @@ def fct_activities():
              "subtask", 
              "min", 
              "horas", 
-             "note"]]
+             "note",
+             "row_index"]]
 
 
     return df

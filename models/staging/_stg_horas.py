@@ -1,4 +1,4 @@
-from helpers.data_connections.connect_gsheets import load_data_gsheets
+from helpers.utilities.load_gsheets import load_gsheets_worksheet
 from helpers.ui_components.yaml_loader import get_table_config
 
 def stg_horas():
@@ -14,6 +14,6 @@ def stg_horas():
     
     worksheet = table_config.get("worksheet")
     
-    df = load_data_gsheets(worksheet=worksheet)
+    df = load_gsheets_worksheet(worksheet_name=worksheet)
     return df
 
