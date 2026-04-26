@@ -6,19 +6,21 @@ AREA_COLORS = {
     "FORM": "#A1C2BD",
     "BREAK": "#A5C89E",
     "MISC": "#234C6A",
+    "MUSC": "#FF878F",
 }
 
 AREA_SORTING = {
     "DATA": 1,
-    "ADM": 5,
-    "MATR": 3,
-    "DOCU": 2,
-    "FORM": 4,
+    "ADM": 4,
+    "MATR": 2,
+    "DOCU": 3,
+    "FORM": 5,
+    "MUSC": 7,
 }
 
 AREA_CORE = [
     "DATA",
-    "ADM",
     "MATR",
     "DOCU",
-]
+    "ADM",
+    "FORM"]

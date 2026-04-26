@@ -27,31 +27,27 @@ def bar_chart_by_project(df, add_area_prefix=True):
     
     Args:
         df: DataFrame with 'project' and 'horas' columns
-        add_area_prefix: If True (default), Y axis shows 'AREA - Project'. If False, shows just project name.
+        add_area_prefix: Deprecated. Left for compatibility.
     """
     
     # Clean data: drop rows with None, NaN or empty project names
     df = df.dropna(subset=['project'])
     df = df[df['project'].astype(str).str.strip() != ''].copy()
     
-    # Sort DataFrame by AREA_SORTING mapping, then by total hours descending. 
-    # To do this correctly: get hours per project_display, map area sorting, and sort.
-    # We will build a helper dataframe for the sort order.
-    if add_area_prefix:
-        df['project_display'] = df['area'].astype(str) + " - " + df['project'].astype(str)
-    else:
-        df['project_display'] = df['project'].astype(str)
+    # Sort DataFrame by AREA_SORTING mapping, then by project name ascending.
+    df['project_display'] = df['project'].astype(str)
     
-    # Calculate sum per project_display for the secondary sort
+    # Calculate sum per project_display and area
     summary = df.groupby(['project_display', 'area'])['horas'].sum().reset_index()
     # Apply AREA_SORTING to get the primary sort key (default 99 if missing)
     summary['area_sort_idx'] = summary['area'].map(lambda x: AREA_SORTING.get(x, 99))
     
-    # Sort by area index ascending, then by total hours descending
-    summary = summary.sort_values(by=['area_sort_idx', 'horas'], ascending=[True, False])
+    # Sort by area index ascending, then by project name ascending
+    summary = summary.sort_values(by=['area_sort_idx', 'project_display'], ascending=[True, True])
     
     # The sorted list of project_display
-    sorted_projects = summary['project_display'].tolist()
+    # Drop duplicates to ensure the sorting list for altair is unique (in case a project spans multiple areas)
+    sorted_projects = summary['project_display'].drop_duplicates().tolist()
     
     # Base chart
     base = alt.Chart(df).encode(
