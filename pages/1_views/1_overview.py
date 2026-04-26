@@ -11,6 +11,8 @@ from helpers.constants.day_codes import DAYS_ES, MONTHS_ES
 from helpers.ui_components.icons import render_icon
 
 st.title(f"{render_icon('logo')} Horas")
+st.caption("Registro de horas efectivas trabajadas.")
+st.markdown("La meta es trabajar 40 horas semanales con 30 horas efectivas. O bien 30 con 20 efectivas. Buscar equilibrio")
 
 st.markdown("[Ir a Ghseet](https://docs.google.com/spreadsheets/d/1I-nQVWT9XP1p0DLbgvpCMWjzQ8i6CqbTM1E9g4oCzDY/edit?gid=1838766383#gid=1838766383)")
     
